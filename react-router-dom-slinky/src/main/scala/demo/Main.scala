@@ -12,6 +12,6 @@ object Main {
       elem
     }
 
-    ReactDOM.render(App.component(()), container)
+    ReactDOM.render(App(), container)
   }
 }

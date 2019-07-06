@@ -29,7 +29,7 @@ object routing {
   )
 
   def drawerRoute(label: String, muiIcon: String, component: NavigationComponent): NavigationRouteConfig =
-    Object.assign(
+    Object.assign[Anon_Screen, Anon_NavigationOptionsPath](
       Anon_Screen(component),
       Anon_NavigationOptionsPath(
         NavigationDrawerScreenOptions(
