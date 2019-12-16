@@ -15,7 +15,10 @@ import typings.atAntDashDesignIconsDashReactDashNative.libFillMod.IconFillProps
 import typings.atAntDashDesignIconsDashReactDashNative.libOutlineMod.IconOutlineProps
 import typings.atAntDashDesignReactDashNative.PartialLocale
 import typings.atAntDashDesignReactDashNative.libModalPropsTypeMod.Action
-import typings.atBang88ReactDashNativeDashDrawerDashLayout.atBang88ReactDashNativeDashDrawerDashLayoutMod.{DrawerLayout, default}
+import typings.atBang88ReactDashNativeDashDrawerDashLayout.atBang88ReactDashNativeDashDrawerDashLayoutMod.{
+  default,
+  DrawerLayout
+}
 import typings.reactDashRouterDashNative.ReactRouterNativeFacade._
 
 @react object App {
@@ -23,30 +26,47 @@ import typings.reactDashRouterDashNative.ReactRouterNativeFacade._
   type Props = Unit
 
   val component = FunctionalComponent[Props] { _ =>
-
     var ref: default | Null = new default {}
 
-    val menuTitles = List("Home", "Antd", "React Router")
-    val menuPaths = List("/", "/antd", "/react-router")
-    val menus = menuTitles.indices.map(index => ListItem(ListItemProps())(menuTitles(index)).withKey(index.toString))
+    val menuTitles         = List("Home", "Antd2", "React Router")
+    val menuPaths          = List("/", "/antd", "/react-router")
+    val (path, updatePath) = useState(menuPaths.head)
+    val menus = menuTitles.indices.map(
+      index =>
+        ListItem(
+          ListItemProps(
+            onPress = _ => {
+              updatePath(menuPaths(index))
+              ref.asInstanceOf[DrawerLayout].closeDrawer()
+            }
+          )
+        )(
+          menuTitles(index)
+        ).withKey(index.toString)
+    )
 
     Provider(ProviderProps(locale = PartialLocale(locale = "enUS")))(
-      Drawer(DrawerProps(
-        drawerRef = (ref = _),
-        sidebar = ScrollView(AntdList(ListProps())(menus)).toST)
+      Drawer(
+        DrawerProps(
+          drawerRef = (ref = _),
+          sidebar   = ScrollView(WhiteSpace(WhiteSpaceProps(size = antdStrings.xl)), AntdList(ListProps())(menus)).toST
+        )
       )(
         NativeRouter(NativeRouterProps())(
           View()(
-            AntdList(ListProps(renderHeader = Text()("List header").toST))(
-              ListItem(ListItemProps(
-                arrow = antdStrings.horizontal,
-                onPress = _ => ref.asInstanceOf[DrawerLayout].openDrawer()))("Open menu")
+            AntdList(ListProps(renderHeader = WhiteSpace(WhiteSpaceProps(size = antdStrings.xl)).toST))(
+              ListItem(
+                ListItemProps(
+                  arrow   = antdStrings.horizontal,
+                  onPress = _ => ref.asInstanceOf[DrawerLayout].openDrawer()
+                )
+              )("Open menu")
             )
           ),
-//          Redirect(RedirectProps(to = path)),
-          Route[Unit](exact = true, path = "/", render = _ => Home()),
-//          Route[Unit](path = "/antd", render = _ => Antd()),
-//          Route[Unit](path = "/react-router", render = _ => ReactRouter()),
+          Text(path),
+          Route[Unit](exact = true, path              = "/", render = _ => Home(path)),
+          Route[Unit](path  = "/antd", render         = _ => Antd(path)),
+          Route[Unit](path  = "/react-router", render = _ => ReactRouter(path))
         )
       )
     )
